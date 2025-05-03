@@ -1,11 +1,11 @@
 import glob
 
+from PIL import Image
+
 from torch.utils.data import Dataset
 from torchvision import transforms
 
-from PIL import Image
-
-class SHHQDataset(Dataset):
+class DummyDataset(Dataset):
     def __init__(self, data_path,
                  img_height, img_width):
         
@@ -23,11 +23,11 @@ class SHHQDataset(Dataset):
 
         targets = {}
         
-        original = transforms.ToTensor()(Image.open(image_path))
-        targets['silhouette'] = transforms.ToTensor()(Image.open(image_path.replace('no_segment','segments')).convert('RGB'))
+        original = transforms.ToTensor()(Image.open(image_path).convert('RGB'))
 
         if self.transform is not None:
             original = self.transform(original)
-            targets['silhouette'] = self.transform(targets['silhouette'])
+
+        targets['original'] = original 
         
         return original, targets
