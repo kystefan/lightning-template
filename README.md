@@ -1,6 +1,6 @@
 # Lightning Project Template
 
-A starter template for creating PyTorch Lightning projects.
+A project template to help you create AI models on multi-node clusters with PyTorch Lightning.
 
 ## Features
 
@@ -11,6 +11,8 @@ A starter template for creating PyTorch Lightning projects.
     - Custom dataset creation and data transformations.
 
     - Automatic checkpointing and resume training.
+
+    - Evaluation with TorchMetrics.
 
     - Logging with TensorBoard.
 
@@ -33,55 +35,67 @@ A starter template for creating PyTorch Lightning projects.
 ## Requirements
 
 ```
-pip install pillow torch torchvision tensorboard onnx lightning
+pip install pillow torch torchvision tensorboard onnx lightning torchmetrics[image] deepspeed
 ```
 
-*\* Check torch-cuda compatibility and install the right torch/torchvision for your machine*
+*\* Check torch-cuda compatibility and install the right torch/torchvision for your machine.*
 
-*Example dataset from https://stylegan-human.github.io*
+*\*\* Example dataset is any arbitrary directory of images.*
 
 ## Usage
 
-1. Clone this repo.
+1. Create a new repo for your research project and make an initial commit.
 
-2. Change origin to target your remote repo.
+2. Copy the contents of this repo to your new repo.
 
 3. Create and train your own model, customise to your needs.
 
     - Start a new training session:
 
         ```
-        python main.py --data_dir path-to-data --experiment my-experiment --mode train --n_train 32000 --n_val 4800 --n_test 3200
+        python main.py --data_dir path-to-data --experiment my-experiment --mode train
         ```
 
     - Resume a training session:
 
         ```
-        python main.py --data_dir path-to-data --experiment my-experiment --version 0.0.1 --mode train --n_train 32000 --n_val 4800 --n_test 3200 --resume
+        python main.py --data_dir path-to-data --experiment my-experiment --version my-version --mode train --resume
         ```
 
     - Test a checkpoint:
 
         ```
-        python main.py --data_dir path-to-data --experiment my-experiment --mode test --n_train 32000 --n_val 4800 --n_test 3200 --ckpt path-to-checkpoint
+        python main.py --data_dir path-to-data --experiment my-experiment --version my-version --mode test --ckpt path-to-checkpoint
         ```
 
         or the latest:
 
         ```
-        python main.py --data_dir path-to-data --experiment my-experiment --version my-version --mode test --n_train 32000 --n_val 4800 --n_test 3200 --resume
+        python main.py --data_dir path-to-data --experiment my-experiment --version my-version --mode test --resume
+        ```
+
+    - Predict with a checkpoint:
+
+        ```
+        python main.py --data_dir path-to-data --experiment my-experiment --version my-version --mode predict --ckpt path-to-checkpoint
+        ```
+
+        or the latest:
+
+        ```
+        python main.py --data_dir path-to-data --experiment my-experiment --version my-version --mode predict --resume
         ```
 
     - Export a checkpoint to ONNX:
 
         ```
-        python main.py --data_dir path-to-data --experiment my-experiment --mode export --n_train 32000 --n_val 4800 --n_test 3200 --ckpt path-to-checkpoint
+        python main.py --experiment my-experiment --version my-version --mode export --ckpt path-to-checkpoint
         ```
 
-        or the latest:
+        or TorchScript:
         
         ```
-        python main.py --data_dir path-to-data --experiment my-experiment --version my-version --mode export --n_train 32000 --n_val 4800 --n_test 3200 --resume
+        python main.py --experiment my-experiment --version my-version --mode export --export_type TorchScript --ckpt path-to-checkpoint
         ```
 
     

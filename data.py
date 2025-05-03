@@ -2,9 +2,9 @@ import pytorch_lightning as L
 import torch
 
 from torch.utils.data import random_split, DataLoader
-from dataset import SHHQDataset
+from dataset import DummyDataset
 
-class SHHQDataModule(L.LightningDataModule):
+class DummyDataModule(L.LightningDataModule):
 
     def __init__(self, data_dir,
                  num_workers, pin_memory,
@@ -22,24 +22,25 @@ class SHHQDataModule(L.LightningDataModule):
         self.n_test = n_test
 
     def setup(self, stage=None):
-        shhq_full = SHHQDataset(self.data_dir, self.img_height, self.img_width)
-        self.shhq_train, self.shhq_val, self.sshq_test = random_split(shhq_full, [self.n_train, self.n_val, self.n_test], 
-                                                                      generator=torch.Generator().manual_seed(17))
-        
-        self.shhq_predict = self.sshq_test
+        if stage == "predict":
+            self.dummy_predict = DummyDataset(self.data_dir, self.img_height, self.img_width)
+        else:
+            dummy_full = DummyDataset(self.data_dir, self.img_height, self.img_width)
+            self.dummy_train, self.dummy_val, self.dummy_test = random_split(dummy_full, [self.n_train, self.n_val, self.n_test], 
+                                                                        generator=torch.Generator().manual_seed(17))
 
     def train_dataloader(self):
-        return DataLoader(self.shhq_train, batch_size=self.batch_size, 
+        return DataLoader(self.dummy_train, batch_size=self.batch_size, 
                           num_workers=self.num_workers, pin_memory=self.pin_memory)
 
     def val_dataloader(self):
-        return DataLoader(self.shhq_val, batch_size=self.batch_size, 
+        return DataLoader(self.dummy_val, batch_size=self.batch_size, 
                           num_workers=self.num_workers, pin_memory=self.pin_memory)
 
     def test_dataloader(self):
-        return DataLoader(self.sshq_test, batch_size=self.batch_size, 
+        return DataLoader(self.dummy_test, batch_size=self.batch_size, 
                           num_workers=self.num_workers, pin_memory=self.pin_memory)
     
     def predict_dataloader(self):
-        return DataLoader(self.shhq_predict, batch_size=self.batch_size, 
+        return DataLoader(self.dummy_predict, batch_size=self.batch_size, 
                           num_workers=self.num_workers, pin_memory=self.pin_memory)
